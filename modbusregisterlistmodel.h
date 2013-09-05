@@ -31,22 +31,22 @@ typedef _modbus modbus_t;
 class ModbusRegisterListModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_ENUMS(RegisterType)
+    Q_ENUMS(ModbusRegisterType)
     Q_ENUMS(OutputType)
 public:
 
-    enum RegisterType {
-        COILS = 1,
-        INPUTS = 2,
-        REGISTERS = 3
+    enum ModbusRegisterType {
+        Coil = 1,
+        Input = 2,
+        Register = 3
     };
 
     enum OutputType {
-        INT16,
-        INT32,
-        FLOAT,
-        FLIPPED_FLOAT,
-        DOUBLE
+        Integer16,
+        Integer32,
+        Float,
+        FlippedFloat,
+        DoubleFloat
     };
 
     explicit ModbusRegisterListModel(QObject *parent = 0);
@@ -54,14 +54,13 @@ public:
     bool connectToServer(const QString& ip, int port = 502);
     bool isConnected() const;
 
-
     int rowCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role) const;
 
     ~ModbusRegisterListModel();
 
-    RegisterType registerType() const;
-    void setRegisterType(RegisterType registerType);
+    ModbusRegisterType modbusRegisterType() const;
+    void setModbusRegisterType(ModbusRegisterType modbusRegisterType);
 
     OutputType outputType() const;
     void setOutputType(OutputType outputType);
@@ -80,7 +79,7 @@ private:
     modbus_t* m_modbusContext;
     QScopedArrayPointer<uint8_t> m_registers;
     int m_numRead;
-    RegisterType m_registerType;
+    ModbusRegisterType m_registerType;
     OutputType m_outputType;
     int m_registerReadAddr;
     int m_registerReadSize;

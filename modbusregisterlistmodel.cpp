@@ -28,8 +28,8 @@ ModbusRegisterListModel::ModbusRegisterListModel(QObject *parent) :
     QAbstractListModel(parent),
     m_modbusContext(0),
     m_registers(new uint8_t[MODBUS_MAX_READ_BITS]),
-    m_registerType(COILS),
-    m_outputType(INT16),
+    m_registerType(Coil),
+    m_outputType(Integer16),
     m_registerReadAddr(0),
     m_registerReadSize(10),
     m_connected(false)
@@ -74,12 +74,12 @@ ModbusRegisterListModel::~ModbusRegisterListModel()
     disconnect();
 }
 
-ModbusRegisterListModel::RegisterType ModbusRegisterListModel::registerType() const
+ModbusRegisterListModel::ModbusRegisterType ModbusRegisterListModel::modbusRegisterType() const
 {
     return m_registerType;
 }
 
-void ModbusRegisterListModel::setRegisterType(RegisterType datatype)
+void ModbusRegisterListModel::setModbusRegisterType(ModbusRegisterType datatype)
 {
     m_registerType = datatype;
 }
@@ -89,19 +89,19 @@ int ModbusRegisterListModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
 
-    if (m_registerType == COILS || m_registerType == INPUTS)
+    if (m_registerType == Coil || m_registerType == Input)
         return m_numRead;
 
     switch (m_outputType) {
-    case INT16:
+    case Integer16:
         return m_numRead;
 
-    case INT32:
-    case FLOAT:
-    case FLIPPED_FLOAT:
+    case Integer32:
+    case Float:
+    case FlippedFloat:
         return m_numRead / 2;
 
-    case DOUBLE:
+    case DoubleFloat:
         return m_numRead / 4;
 
     default:
@@ -119,21 +119,21 @@ QVariant ModbusRegisterListModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole) {
         switch (m_registerType) {
-        case COILS:
-        case INPUTS:
+        case Coil:
+        case Input:
             return m_registers[index.row()];
 
-        case REGISTERS: {
-            if (m_outputType == INT16) {
+        case Register: {
+            if (m_outputType == Integer16) {
                 uint16_t *reg16 = reinterpret_cast<uint16_t *>(m_registers.data());
                 return reg16[index.row()];
-            } else if (m_outputType == INT32) {
+            } else if (m_outputType == Integer32) {
                 uint32_t *reg32 = reinterpret_cast<uint32_t *>(m_registers.data());
                 return reg32[index.row()];
-            } else if (m_outputType == FLOAT) {
+            } else if (m_outputType == Float) {
                 float *floattype = reinterpret_cast<float *>(m_registers.data());
                 return floattype[index.row()];
-            } else if (m_outputType == DOUBLE) {
+            } else if (m_outputType == DoubleFloat) {
                 double *doubletype = reinterpret_cast<double *>(m_registers.data());
                 return doubletype[index.row()];
             }
@@ -149,13 +149,13 @@ void ModbusRegisterListModel::readRegisters()
     beginResetModel();
 
     switch (m_registerType) {
-    case COILS:
+    case Coil:
         m_numRead = modbus_read_bits(m_modbusContext, m_registerReadAddr, m_registerReadSize, m_registers.data());
         break;
-    case INPUTS:
+    case Input:
         m_numRead = modbus_read_input_bits(m_modbusContext, m_registerReadAddr, m_registerReadSize, m_registers.data());
         break;
-    case REGISTERS:
+    case Register:
         m_numRead = modbus_read_registers(m_modbusContext, m_registerReadAddr, m_registerReadSize, reinterpret_cast<uint16_t *>(m_registers.data()));
         break;
 
