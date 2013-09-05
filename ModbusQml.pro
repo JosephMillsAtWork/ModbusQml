@@ -11,6 +11,10 @@ QML_IMPORT_PATH =
 # CONFIG += mobility
 # MOBILITY +=
 
+qtHaveModule(widgets) {
+    QT += widgets
+}
+
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
     thirdparty/libmodbus/src/modbus.c \
