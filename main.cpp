@@ -23,10 +23,12 @@
 #include <QtQml>
 #include <QtQuick/QQuickView>
 #include <QtCore/QString>
+#include "modbusregisterlistmodel.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    qmlRegisterType<ModbusRegisterListModel>("com.minimoog77", 1, 0, "ModbusRegisterListModel");
     QQmlApplicationEngine engine("qml/ModbusQml/main.qml");
     QObject *topLevel = engine.rootObjects().value(0);
     QQuickWindow *window = qobject_cast<QQuickWindow *>(topLevel);
