@@ -24,6 +24,11 @@
 #include <modbus/modbus.h>
 #include <stdint.h>
 
+/**
+ * Constructor
+ *
+ * @param parent
+ */
 ModbusRegisterListModel::ModbusRegisterListModel(QObject *parent) :
     QAbstractListModel(parent),
     m_modbusContext(0),
@@ -36,6 +41,13 @@ ModbusRegisterListModel::ModbusRegisterListModel(QObject *parent) :
 {
 }
 
+/**
+ * Connects to the modbus server
+ *
+ * @param ip ip address of the modbus server
+ * @param port port
+ * @return false on error connecting
+ */
 bool ModbusRegisterListModel::connectToServer(const QString &ip, int port)
 {
     if (m_connected)
@@ -59,6 +71,9 @@ bool ModbusRegisterListModel::isConnected() const
     return m_connected;
 }
 
+/**
+ * Disconnect from the modbus server
+ */
 void ModbusRegisterListModel::disconnect()
 {
     if (m_modbusContext) {
@@ -69,22 +84,35 @@ void ModbusRegisterListModel::disconnect()
     m_modbusContext = 0;
 }
 
+/**
+ * Desctructor
+ */
 ModbusRegisterListModel::~ModbusRegisterListModel()
 {
     disconnect();
 }
 
+/**
+ * Gets the type of register we want to read
+ */
 ModbusRegisterListModel::ModbusRegisterType ModbusRegisterListModel::modbusRegisterType() const
 {
     return m_registerType;
 }
 
+/**
+ * Set what kind of register type we want to read
+ *
+ * @param datatype type of modbus register
+ */
 void ModbusRegisterListModel::setModbusRegisterType(ModbusRegisterType datatype)
 {
     m_registerType = datatype;
 }
 
-
+/**
+ * @reimp
+ */
 int ModbusRegisterListModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
@@ -109,6 +137,9 @@ int ModbusRegisterListModel::rowCount(const QModelIndex &parent) const
     }
 }
 
+/**
+ * @reimp
+ */
 QVariant ModbusRegisterListModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
@@ -144,6 +175,9 @@ QVariant ModbusRegisterListModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+/**
+ * Read registers from modbus server.
+ */
 void ModbusRegisterListModel::readRegisters()
 {
     beginResetModel();
@@ -167,31 +201,53 @@ void ModbusRegisterListModel::readRegisters()
     endResetModel();
 }
 
+/**
+ * How many register to read
+ */
 int ModbusRegisterListModel::registerReadSize() const
 {
     return m_registerReadSize;
 }
 
+/**
+ * Sets how many registers to read
+ */
 void ModbusRegisterListModel::setRegisterReadSize(int registerReadSize)
 {
     m_registerReadSize = registerReadSize;
 }
 
+/**
+ * Gets the starting address of registers to read
+ *
+ * @return
+ */
 int ModbusRegisterListModel::registerReadAddr() const
 {
     return m_registerReadAddr;
 }
 
+/**
+ * Sets the starting address of registers to read
+ *
+ * @param registerReadAddr
+ */
 void ModbusRegisterListModel::setRegisterReadAddr(int registerReadAddr)
 {
     m_registerReadAddr = registerReadAddr;
 }
 
+/**
+ * Returns the output type (interpretation of modbus registers)
+ */
 ModbusRegisterListModel::OutputType ModbusRegisterListModel::outputType() const
 {
     return m_outputType;
 }
 
+/**
+ * Sets the output type of modbus registers
+ */
 void ModbusRegisterListModel::setOutputType(OutputType outputType)
 {
     m_outputType = outputType;
